@@ -4,3 +4,4 @@ node_modules/
 coverage/
 .vscode/
 access.log
+public/

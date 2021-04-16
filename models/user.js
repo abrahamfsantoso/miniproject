@@ -4,7 +4,11 @@ const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema(
   {
-    name: {
+    fullname: {
+      type: String,
+      required: true,
+    },
+    username: {
       type: String,
       required: true,
     },
@@ -20,20 +24,15 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum : ['user','admin'],
+      enum: ["user", "admin"],
       default: "user",
       required: true,
     },
-    mobile_phone: {
+    photo: {
       type: String,
       required: false,
       default: null,
-    },
-    profile_picture: {
-      type: String,
-      required: false,
-      default: null,
-      get: getProfilePicture,
+      get: getPhoto,
     },
   },
   {
@@ -47,12 +46,12 @@ const UserSchema = new mongoose.Schema(
 );
 
 // Getter photo
-function getProfilePicture(photo) {
-  if (!photo) {
+function getPhoto(image) {
+  if (!image) {
     return null;
   }
 
-  return `/images/${photo}`;
+  return `/images/${image}`;
 }
 
 function encryptPassword(password) {

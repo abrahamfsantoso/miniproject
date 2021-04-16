@@ -14,6 +14,6 @@ mongoose
   .catch((err) => console.error(err));
 
 // Import models
-const user = require ("./user");
+const user = require("./user");
 
 module.exports = { user }; // Export models

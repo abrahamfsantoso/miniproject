@@ -8,6 +8,22 @@ const fileUpload = require("express-fileupload");
 // Make express app
 const app = express();
 
+// Express session
+const session = require("express-session");
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+// Passport
+const passport = require("passport");
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Body-parser to read req.body
 app.use(express.json()); // Enable req.body JSON type
 app.use(
@@ -22,12 +38,11 @@ app.use(fileUpload());
 // Set static file directory
 app.use(express.static("public"));
 
-
 // ----------------------------------------------------
 // Security Packages
 const fs = require("fs");
-const path = require ("path");
-const morgan = require ("morgan");
+const path = require("path");
+const morgan = require("morgan");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const rateLimit = require("express-rate-limit");
@@ -80,18 +95,19 @@ if (process.env.NODE_ENV === "development") {
 // ----------------------------
 
 // Import routes
-const authRoutes = require ("./routes/authRoutes");
-const userRoutes = require ("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 // Make routes
-app.use("/auth", authRoutes);
+app.use("/", authRoutes);
 app.use("/user", userRoutes);
 
-
 // Running server
-const PORT = 5000 || process.env.PORT
+const PORT = 5000 || process.env.PORT;
 if (process.env.NODE_ENV !== "test") {
-app.listen(PORT, () => console.log(`Server is currently listening on PORT ${PORT}`));
+  app.listen(PORT, () =>
+    console.log(`Server is currently listening on PORT ${PORT}`)
+  );
 }
 
 module.exports = app;

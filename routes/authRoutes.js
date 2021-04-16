@@ -12,18 +12,13 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 router.post(
-  "/register",
-  authValidator.register,
-  auth.register,
+  "/signup",
+  authValidator.signup,
+  auth.signup,
   authController.getToken
 );
 
 // If user access /auth/signin (POST)
-router.post(
-  "/login",
-  authValidator.login,
-  auth.login,
-  authController.getToken
-);
+router.post("/login", authValidator.login, auth.login, authController.getToken);
 
 module.exports = router;

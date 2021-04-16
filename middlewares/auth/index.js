@@ -5,10 +5,19 @@ const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const { user } = require("../../models");
 
-module.exports.register = (req, res, next) => {
-  // It will go to ../middlewares/auth/index.js -> passport.use("signup")
-  passport.authenticate("register", { session: false }, (err, user, info) => {
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
+});
 
+passport.deserializeUser(function (id, done) {
+  user.findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+module.exports.signup = (req, res, next) => {
+  // It will go to ../middlewares/auth/index.js -> passport.use("signup")
+  passport.authenticate("register", (err, user, info) => {
     // If error
     if (err) {
       return res.status(500).json({
@@ -57,7 +66,7 @@ passport.use(
 );
 
 module.exports.login = (req, res, next) => {
-  passport.authenticate("login", { session: false }, (err, user, info) => {
+  passport.authenticate("login", (err, user, info) => {
     // If error
     if (err) {
       return res.status(500).json({
@@ -158,12 +167,12 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     },
-    
+
     async (token, done) => {
       const userLogin = await user.findOne({
         _id: token.id,
       });
-      
+
       if (userLogin.role.includes("admin")) {
         return done(null, token);
       }
@@ -173,55 +182,3 @@ passport.use(
     }
   )
 );
-
-module.exports.user = (req, res, next) => {
-  // It will go to ../middlewares/auth/index.js -> passport.use("signup")
-  passport.authorize("user", (err, user, info) => {
-    // After go to ../middlewares/auth/index.js -> passport.use("signup")
-    // It will bring the variable from done() function
-    // Like err = null, user = false, info = { message: "User can't be creted" }
-    // Or err = null, user = userSignUp, info = { message: "User can be creted" }
-
-    // If error
-    if (err) {
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: err,
-      });
-    }
-
-    // If user is false
-    if (!user) {
-      return res.status(403).json({
-        message: info.message,
-      });
-    }
-
-    // Make req.user that will be save the user value
-    // And it will bring to controller
-    req.user = user;
-
-    // Next to authController.getToken
-    next();
-  })(req, res, next);
-};
-
-passport.use(
-  'user',
-  new JWTstrategy({
-      secretOrKey: process.env.JWT_SECRET, 
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
-    },
-    async (token, done) => {
-      const userLogin = await user.findOne({
-        email: token.email
-      })
-
-      if (userLogin.role.includes('user')) {
-        return done(null, token)
-      }
-
-      return done(null, false)
-    }
-  )
-)

@@ -1,17 +1,28 @@
+const crypto = require("crypto");
+const path = require("path");
+const { user } = require("../../models/");
 const validator = require("validator");
 
-module.exports.register = async (req, res, next) => {
+module.exports.signup = async (req, res, next) => {
   let errors = [];
 
+  if (validator.isNumeric(req.body.fullname)) {
+    errors.push("Please input valid letters");
+  }
+  if (validator.isNumeric(req.body.username)) {
+    errors.push("Please input valid letters");
+  }
   if (!validator.isEmail(req.body.email)) {
     errors.push("Please input valid email");
   }
   if (!validator.isStrongPassword(req.body.password)) {
-    errors.push("Password must have minimum length of 8 characters with minimum 1 lowercase character, 1 uppercase character, 1 number and 1 symbol")
+    errors.push(
+      "Password must have minimum length of 8 characters with minimum 1 lowercase character, 1 uppercase character, 1 number and 1 symbol"
+    );
   }
-  
-  if (req.body.confirmPassword !== req.body.password) {
-    errors.push("Password confirmation must be the same with password")
+
+  if (req.body.confirmpassword !== req.body.password) {
+    errors.push("Password confirmation must be the same with password");
   }
   // If errors length > 0, it will make errors message
   if (errors.length > 0) {
@@ -31,9 +42,11 @@ module.exports.login = async (req, res, next) => {
     errors.push("Please input valid email");
   }
   if (!validator.isStrongPassword(req.body.password)) {
-    errors.push("Password must have minimum length of 8 characters with minimum 1 lowercase character, 1 uppercase character, 1 number and 1 symbol")
+    errors.push(
+      "Password must have minimum length of 8 characters with minimum 1 lowercase character, 1 uppercase character, 1 number and 1 symbol"
+    );
   }
-  
+
   // If errors length > 0, it will make errors message
   if (errors.length > 0) {
     // Because bad request

@@ -3,18 +3,22 @@ require("dotenv").config({
 });
 // Express
 const express = require("express");
+const session = require("express-session");
 const fileUpload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const MongoStore = require("connect-mongo")(session);
 
 // Make express app
 const app = express();
 
 // Express session
-const session = require("express-session");
 app.use(
   session({
     secret: "secret",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
   })
 );
 // Passport
@@ -38,6 +42,8 @@ app.use(fileUpload());
 // Set static file directory
 app.use(express.static("public"));
 
+// Cookie-parser
+app.use(cookieParser());
 // ----------------------------------------------------
 // Security Packages
 const fs = require("fs");

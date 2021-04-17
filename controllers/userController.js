@@ -32,9 +32,6 @@ class UserController {
   // Update user
   async update(req, res) {
     try {
-      if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).json({ message: "No files were uploaded." });
-      }
       if (req.files) {
         const file = req.files.photo;
 
